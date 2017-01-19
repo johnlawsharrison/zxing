@@ -71,4 +71,34 @@ public final class DataMatrixWriterTestCase extends Assert {
     assertTrue(tooSmall < matrix.getHeight());
   }
 
+  @Test
+  public void testDataMatrixEmptyContents() {
+    try {
+      Map<EncodeHintType,Object> hints = new EnumMap<>(EncodeHintType.class);
+      hints.put(EncodeHintType.DATA_MATRIX_SHAPE, SymbolShapeHint.FORCE_SQUARE);
+
+      int bigEnough = 64;
+      DataMatrixWriter writer = new DataMatrixWriter();
+      BitMatrix matrix = writer.encode("", BarcodeFormat.DATA_MATRIX, bigEnough, bigEnough, hints);
+      fail("Expected an IllegalArgumentException to be thrown");
+    } catch (IllegalArgumentException e) {
+      assertEquals(e.getMessage(), "Found empty contents");
+    }
+  }
+
+  @Test
+  public void testDataMatrixWrongFormat() {
+    try {
+      Map<EncodeHintType,Object> hints = new EnumMap<>(EncodeHintType.class);
+      hints.put(EncodeHintType.DATA_MATRIX_SHAPE, SymbolShapeHint.FORCE_SQUARE);
+
+      int bigEnough = 64;
+      DataMatrixWriter writer = new DataMatrixWriter();
+      BitMatrix matrix = writer.encode("http://www.google.com", BarcodeFormat.AZTEC, bigEnough, bigEnough, hints);
+      fail("Expected an IllegalArgumentException to be thrown");
+    } catch (IllegalArgumentException e) {
+      assertEquals(e.getMessage(), "Can only encode DATA_MATRIX, but got " + BarcodeFormat.AZTEC);
+    }
+  }
+
 }
